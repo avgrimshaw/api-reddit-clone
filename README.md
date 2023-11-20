@@ -2,7 +2,11 @@
 
 ## Setup environment variables
 
-You will need the necessary environment variables to run this project:
+You will need the necessary environment variables to run this project.
+
+First of all, please run the command `npm install` in the terminal to install the required dependencies.
+
+Once you have done that, you can start creating your environment variables:
 
 1.  Create two `.env` files in the main directory: `.env.test` and `.env.development`
 2.  Into each, add PGDATABASE=
