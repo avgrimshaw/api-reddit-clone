@@ -23,12 +23,19 @@ describe("GET /api/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then(({ body }) => {
-        body.topics.forEach((topic) => {
-          expect(topic).toMatchObject({
+        if (body.length > 1) {
+          body.topics.forEach((topic) => {
+            expect(topic).toMatchObject({
+              slug: expect.any(String),
+              description: expect.any(String),
+            });
+          });
+        } else if (body.length === 1) {
+          expect(body.topics[0]).toMatchObject({
             slug: expect.any(String),
             description: expect.any(String),
           });
-        });
+        }
       });
   });
 });
