@@ -42,5 +42,14 @@ describe("GET /api/articles", () => {
           expect(body.msg).toEqual("Not found");
         });
     });
+    it("400: should return a message of if the given ':article_id' parameter is an invalid request", () => {
+      const test_id = "bad_request";
+      return request(app)
+        .get(`/api/articles/${test_id}`)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("Bad request");
+        });
+    });
   });
 });
