@@ -5,8 +5,7 @@ exports.selectAllArticles = () => {
   return db.query(`SELECT * FROM articles`);
 };
 
-exports.selectArticleById = (req) => {
-  const { article_id } = req.params;
+exports.selectArticleById = (article_id) => {
   const articlesByIdQuery = format(
     `SELECT * FROM articles
     WHERE article_id = %L`,
