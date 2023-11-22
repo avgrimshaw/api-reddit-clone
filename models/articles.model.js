@@ -2,7 +2,12 @@ const format = require("pg-format");
 const db = require("../db/connection");
 
 exports.selectAllArticles = () => {
-  return db.query(`SELECT * FROM articles`);
+  return db
+    .query(
+      `SELECT * FROM articles
+      ORDER BY created_at DESC;`
+    )
+    .then(({ rows }) => rows);
 };
 
 exports.selectArticleById = (article_id) => {
