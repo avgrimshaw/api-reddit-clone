@@ -26,7 +26,7 @@ describe("GET /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const { article } = body;
-        expect(article[0].article_id).toEqual(test_id);
+        expect(article.article_id).toEqual(test_id);
       });
   });
   it("404: should return a message when no articles with given ':article_id' parameter does not exist", () => {
