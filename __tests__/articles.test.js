@@ -59,7 +59,14 @@ describe("GET /api/articles/:article_id/comments", () => {
         const { comments } = body;
 
         comments.forEach((comment) => {
-          expect(comment).toHaveProperty("article_id", test_id);
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+            author: expect.any(String),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+          });
         });
       });
   });
@@ -70,6 +77,15 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toEqual("Not found");
+      });
+  });
+  it("400: should respond a message if the given ':article_id' parameter is an invalid request", () => {
+    const test_id = "bad_request";
+    return request(app)
+      .get(`/api/articles/${test_id}/comments`)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad request");
       });
   });
 });
