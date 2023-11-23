@@ -18,13 +18,11 @@ exports.selectArticleById = (article_id) => {
 exports.selectCommentsById = (article_id) => {
   const commentsByIdQuery = format(
     `SELECT * FROM comments
-    WHERE article_id = %L;`,
+    WHERE article_id = %L
+    ORDER BY created_at ASC;`,
     [article_id]
   );
   return db.query(commentsByIdQuery).then(({ rows }) => {
-    if (!rows.length) {
-      return Promise.reject({ status: 404, msg: "Not found" });
-    }
     return rows;
   });
 };

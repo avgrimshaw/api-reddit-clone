@@ -8,6 +8,7 @@ const {
   commentData,
 } = require("../db/data/test-data");
 const request = require("supertest");
+require("jest-sorted");
 const articlesData = require("../db/data/test-data/articles");
 
 beforeEach(() => {
@@ -50,14 +51,17 @@ describe("GET /api/articles/:article_id", () => {
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
-  it("200: should return an array of comments matching the given article_id parameter", () => {
+  it("200: should return an array of comments matching the given :article_id parameter and sorted by most recent (created_at)", () => {
     const test_id = 1;
     return request(app)
       .get(`/api/articles/${test_id}/comments`)
       .expect(200)
       .then(({ body }) => {
         const { comments } = body;
-
+        expect(comments).toBeSorted({
+          key: "created_at",
+          descending: false,
+        });
         comments.forEach((comment) => {
           expect(comment).toMatchObject({
             comment_id: expect.any(Number),
@@ -68,6 +72,16 @@ describe("GET /api/articles/:article_id/comments", () => {
             created_at: expect.any(String),
           });
         });
+      });
+  });
+  it("200: should return an empty array if there article with given :article_id parameter exists but has no comments", () => {
+    let test_id = 4;
+    return request(app)
+      .get(`/api/articles/${test_id}/comments`)
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toEqual([]);
       });
   });
   it("404: should respond a message when the given':article_id' parameter does not exist in comments", () => {
