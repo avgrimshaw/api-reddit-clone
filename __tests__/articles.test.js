@@ -8,6 +8,7 @@ const {
   commentData,
 } = require("../db/data/test-data");
 const request = require("supertest");
+require("jest-sorted");
 const articlesData = require("../db/data/test-data/articles");
 
 beforeEach(() => {
@@ -16,6 +17,38 @@ beforeEach(() => {
 
 afterAll(() => {
   return db.end();
+});
+
+describe("GET /api/articles", () => {
+  it("200: should return all articles sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSorted(articles.created_at);
+      });
+  });
+  it("200: should return all articles containing joined comment_count selected from comments data table", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
 });
 
 describe("GET /api/articles/:article_id", () => {
@@ -29,7 +62,7 @@ describe("GET /api/articles/:article_id", () => {
         expect(article.article_id).toEqual(test_id);
       });
   });
-  it("404: should return a message when no articles with given ':article_id' parameter does not exist", () => {
+  it("404: should respond a message ':article_id' parameter does not exist", () => {
     const test_id = articlesData.length + 1;
     return request(app)
       .get(`/api/articles/${test_id}`)
@@ -38,7 +71,7 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.msg).toEqual("Not found");
       });
   });
-  it("400: should return a message of if the given ':article_id' parameter is an invalid request", () => {
+  it("400: should respond a message if the given ':article_id' parameter is an invalid request", () => {
     const test_id = "bad_request";
     return request(app)
       .get(`/api/articles/${test_id}`)
