@@ -9,7 +9,6 @@ exports.getAllArticles = (req, res, next) => {
       res.status(200).send({ articles });
     })
     .catch(next);
-  2;
 };
 
 exports.getArticleById = (req, res, next) => {
