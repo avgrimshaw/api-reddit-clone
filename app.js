@@ -12,6 +12,7 @@ app.get("/api", getEndpointsJson);
 
 app.get("/api/topics", getAllTopics);
 
+app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsById);
 

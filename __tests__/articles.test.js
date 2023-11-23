@@ -19,6 +19,38 @@ afterAll(() => {
   return db.end();
 });
 
+describe("GET /api/articles", () => {
+  it("200: should return all articles sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSorted(articles.created_at);
+      });
+  });
+  it("200: should return all articles containing joined comment_count selected from comments data table", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+});
+
 describe("GET /api/articles/:article_id", () => {
   it("200: should return an article object which contains articles by the given ':article_id' parameter", () => {
     const test_id = 1;
