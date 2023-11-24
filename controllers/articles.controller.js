@@ -44,15 +44,15 @@ exports.postComment = (req, res, next) => {
   const { body } = req;
   const { article_id } = req.params;
 
-  const commentPromises = [insertComment(body, article_id)];
+  const commentPromises = [checkArticleExists(article_id)];
 
   if (article_id) {
-    commentPromises.push(checkArticleExists(article_id));
+    commentPromises.push(insertComment(body, article_id));
   }
 
   Promise.all(commentPromises)
     .then((resolvedPromises) => {
-      const comment = resolvedPromises[0];
+      const comment = resolvedPromises[1];
       res.status(201).send({ comment });
     })
     .catch(next);
