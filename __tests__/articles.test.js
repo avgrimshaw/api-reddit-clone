@@ -135,3 +135,135 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  it("201: should post comment to comments data table with correct properties", () => {
+    const test_id = 1;
+    return request(app)
+      .post(`/api/articles/${test_id}/comments`)
+      .send({
+        username: "lurker",
+        body: "This is my comment",
+      })
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          body: "This is my comment",
+          article_id: test_id,
+          author: "lurker",
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+        });
+      });
+  });
+  it("201: should ignore any additional properties other than ones required", () => {
+    const test_id = 1;
+    return request(app)
+      .post(`/api/articles/${test_id}/comments`)
+      .expect(201)
+      .send({
+        username: "lurker",
+        body: "This is my comment",
+        extra: "extra property",
+      })
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          body: "This is my comment",
+          article_id: test_id,
+          author: "lurker",
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+        });
+      });
+  });
+  it("404: should respond with error message when passed valid, but non-existent :article_id", () => {
+    const test_id = articlesData.length + 1;
+    return request(app)
+      .post(`/api/articles/${test_id}/comments`)
+      .expect(404)
+      .send({
+        username: "lurker",
+        body: "This is my comment",
+      })
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Not found");
+      });
+  });
+  it("400: should respond with error message when passed properties are missing and/or have invalid data type values - TEST ONE", () => {
+    const test_id = 1;
+    return request(app)
+      .post(`/api/articles/${test_id}/comments`)
+      .expect(400)
+      .send({
+        username: 12,
+        body: 14,
+      })
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad request");
+      });
+  });
+  it("400: should respond with error message when passed properties are missing and/or have invalid data type values - TEST TWO", () => {
+    const test_id = 1;
+    return request(app)
+      .post(`/api/articles/${test_id}/comments`)
+      .expect(400)
+      .send({
+        username: "lurker",
+      })
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad request");
+      });
+  });
+  it("400: should respond with error message when passed properties are missing and/or have invalid data type values - TEST THREE", () => {
+    const test_id = 1;
+    return request(app)
+      .post(`/api/articles/${test_id}/comments`)
+      .expect(400)
+      .send({
+        body: "This is my comment",
+      })
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad request");
+      });
+  });
+  it("400: should respond with error message when passed properties are missing and/or have invalid data type values - TEST FOUR", () => {
+    const test_id = 1;
+    return request(app)
+      .post(`/api/articles/${test_id}/comments`)
+      .expect(400)
+      .send({})
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad request");
+      });
+  });
+  it("400: should respond with error message when passed an invalid :article_id", () => {
+    const test_id = "bad_request";
+    return request(app)
+      .post(`/api/articles/${test_id}/comments`)
+      .expect(400)
+      .send({
+        username: "lurker",
+        body: "This is my comment",
+      })
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad request");
+      });
+  });
+  it("400: should respond with error message when passed a non-existent username", () => {
+    const test_id = "1";
+    return request(app)
+      .post(`/api/articles/${test_id}/comments`)
+      .expect(400)
+      .send({
+        username: "non-existent",
+        body: "This is my comment",
+      })
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad request");
+      });
+  });
+});
