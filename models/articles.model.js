@@ -51,11 +51,6 @@ exports.selectCommentsById = (article_id) => {
 };
 
 exports.insertComment = (body, article_id) => {
-  const bodyKeys = Object.keys(body);
-  if (bodyKeys.length > 2 && bodyKeys.includes("username" && "body")) {
-    return Promise.reject({ status: 400, msg: "Bad request" });
-  }
-
   const insertCommentQuery = format(
     `INSERT INTO comments
     (author, body, article_id)

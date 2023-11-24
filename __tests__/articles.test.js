@@ -158,6 +158,28 @@ describe("POST /api/articles/:article_id/comments", () => {
         });
       });
   });
+  it("201: should ignore any additional properties other than ones required", () => {
+    const test_id = 1;
+    return request(app)
+      .post(`/api/articles/${test_id}/comments`)
+      .expect(201)
+      .send({
+        username: "lurker",
+        body: "This is my comment",
+        extra: "extra property",
+      })
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          body: "This is my comment",
+          article_id: test_id,
+          author: "lurker",
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+        });
+      });
+  });
   it("404: should respond with error message when passed valid, but non-existent :article_id", () => {
     const test_id = articlesData.length + 1;
     return request(app)
@@ -214,20 +236,6 @@ describe("POST /api/articles/:article_id/comments", () => {
       .post(`/api/articles/${test_id}/comments`)
       .expect(400)
       .send({})
-      .then(({ body }) => {
-        expect(body.msg).toEqual("Bad request");
-      });
-  });
-  it("400: should respond with error message when passed more properties than required", () => {
-    const test_id = 1;
-    return request(app)
-      .post(`/api/articles/${test_id}/comments`)
-      .expect(400)
-      .send({
-        username: "lurker",
-        body: "This is my comment",
-        extra: "extra property",
-      })
       .then(({ body }) => {
         expect(body.msg).toEqual("Bad request");
       });
