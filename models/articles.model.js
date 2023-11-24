@@ -1,5 +1,6 @@
 const format = require("pg-format");
 const db = require("../db/connection");
+const { articleData } = require("../db/data/test-data");
 
 exports.selectAllArticles = () => {
   return db
@@ -60,4 +61,23 @@ exports.insertComment = (body, article_id) => {
     [[body.username, body.body, article_id]]
   );
   return db.query(insertCommentQuery).then(({ rows }) => rows[0]);
+};
+
+exports.updateVotes = (body, article_id) => {
+  let updateVotesBy = null;
+  if (body.inc_votes >= 0) {
+    updateVotesBy = `+ ${body.inc_votes}`;
+  } else {
+    const incVotesPositive = (body.inc_votes *= -1);
+    updateVotesBy = `- ${incVotesPositive}`;
+  }
+  const updateVotesQuery = format(
+    `UPDATE articles
+    SET votes = votes %s
+    WHERE article_id = %L
+    RETURNING *;`,
+    [updateVotesBy],
+    [article_id]
+  );
+  return db.query(updateVotesQuery).then(({ rows }) => rows[0]);
 };

@@ -72,7 +72,7 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
   it("400: should respond a message if the given ':article_id' parameter is an invalid request", () => {
-    const test_id = "bad_request";
+    const test_id = "invalid_id";
     return request(app)
       .get(`/api/articles/${test_id}`)
       .expect(400)
@@ -126,7 +126,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
   it("400: should respond a message if the given ':article_id' parameter is an invalid request", () => {
-    const test_id = "bad_request";
+    const test_id = "invalid_id";
     return request(app)
       .get(`/api/articles/${test_id}/comments`)
       .expect(400)
@@ -162,12 +162,12 @@ describe("POST /api/articles/:article_id/comments", () => {
     const test_id = 1;
     return request(app)
       .post(`/api/articles/${test_id}/comments`)
-      .expect(201)
       .send({
         username: "lurker",
         body: "This is my comment",
         extra: "extra property",
       })
+      .expect(201)
       .then(({ body }) => {
         const { comment } = body;
         expect(comment).toMatchObject({
@@ -184,11 +184,11 @@ describe("POST /api/articles/:article_id/comments", () => {
     const test_id = articlesData.length + 1;
     return request(app)
       .post(`/api/articles/${test_id}/comments`)
-      .expect(404)
       .send({
         username: "lurker",
         body: "This is my comment",
       })
+      .expect(404)
       .then(({ body }) => {
         expect(body.msg).toEqual("Not found");
       });
@@ -197,11 +197,11 @@ describe("POST /api/articles/:article_id/comments", () => {
     const test_id = 1;
     return request(app)
       .post(`/api/articles/${test_id}/comments`)
-      .expect(400)
       .send({
         username: 12,
         body: 14,
       })
+      .expect(400)
       .then(({ body }) => {
         expect(body.msg).toEqual("Bad request");
       });
@@ -210,10 +210,10 @@ describe("POST /api/articles/:article_id/comments", () => {
     const test_id = 1;
     return request(app)
       .post(`/api/articles/${test_id}/comments`)
-      .expect(400)
       .send({
         username: "lurker",
       })
+      .expect(400)
       .then(({ body }) => {
         expect(body.msg).toEqual("Bad request");
       });
@@ -222,10 +222,10 @@ describe("POST /api/articles/:article_id/comments", () => {
     const test_id = 1;
     return request(app)
       .post(`/api/articles/${test_id}/comments`)
-      .expect(400)
       .send({
         body: "This is my comment",
       })
+      .expect(400)
       .then(({ body }) => {
         expect(body.msg).toEqual("Bad request");
       });
@@ -234,21 +234,21 @@ describe("POST /api/articles/:article_id/comments", () => {
     const test_id = 1;
     return request(app)
       .post(`/api/articles/${test_id}/comments`)
-      .expect(400)
       .send({})
+      .expect(400)
       .then(({ body }) => {
         expect(body.msg).toEqual("Bad request");
       });
   });
   it("400: should respond with error message when passed an invalid :article_id", () => {
-    const test_id = "bad_request";
+    const test_id = "invalid_id";
     return request(app)
       .post(`/api/articles/${test_id}/comments`)
-      .expect(400)
       .send({
         username: "lurker",
         body: "This is my comment",
       })
+      .expect(400)
       .then(({ body }) => {
         expect(body.msg).toEqual("Bad request");
       });
@@ -257,11 +257,82 @@ describe("POST /api/articles/:article_id/comments", () => {
     const test_id = "1";
     return request(app)
       .post(`/api/articles/${test_id}/comments`)
-      .expect(400)
       .send({
         username: "non-existent",
         body: "This is my comment",
       })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad request");
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  it("200: should increment votes when entity property 'inc_votes' has a positive value", () => {
+    const test_id = 5;
+    return request(app)
+      .patch(`/api/articles/${test_id}`)
+      .send({
+        inc_votes: 100,
+      })
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toMatchObject({
+          article_id: 5,
+          title: "UNCOVERED: catspiracy to bring down democracy",
+          topic: "cats",
+          author: "rogersop",
+          created_at: "2020-08-03T13:14:00.000Z",
+          votes: 100,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  it("200: should decrement votes when entity property 'inc_votes' has a negative value", () => {
+    const test_id = 5;
+    return request(app)
+      .patch(`/api/articles/${test_id}`)
+      .send({
+        inc_votes: -50,
+      })
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toMatchObject({
+          article_id: 5,
+          title: "UNCOVERED: catspiracy to bring down democracy",
+          topic: "cats",
+          author: "rogersop",
+          created_at: "2020-08-03T13:14:00.000Z",
+          votes: -50,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  it("404: should respond with error message when passed valid, but non-existent :article_id", () => {
+    const test_id = articlesData.length + 1;
+    return request(app)
+      .patch(`/api/articles/${test_id}`)
+      .send({
+        inc_votes: -50,
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Not found");
+      });
+  });
+  it("400: should respond with error message when passed an invalid :article_id", () => {
+    const test_id = "invalid_id";
+    return request(app)
+      .patch(`/api/articles/${test_id}`)
+      .send({
+        inc_votes: -50,
+      })
+      .expect(400)
       .then(({ body }) => {
         expect(body.msg).toEqual("Bad request");
       });
