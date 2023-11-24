@@ -59,9 +59,9 @@ exports.postComment = (req, res, next) => {
     .catch(next);
 };
 
-exports.patchVotes = (res, req, next) => {
-  const { body } = req.req;
-  const { article_id } = req.req.params;
+exports.patchVotes = (req, res, next) => {
+  const { body } = req;
+  const { article_id } = req.params;
 
   const votePromises = [checkArticleExists(article_id)];
 
@@ -72,7 +72,7 @@ exports.patchVotes = (res, req, next) => {
   Promise.all(votePromises)
     .then((resolvedPromises) => {
       const article = resolvedPromises[1];
-      res.res.status(200).send({ article });
+      res.status(200).send({ article });
     })
     .catch(next);
 };
