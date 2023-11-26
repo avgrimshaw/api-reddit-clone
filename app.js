@@ -16,6 +16,7 @@ const {
   getAllArticles,
   getArticleById,
 } = require("./controllers/articles.controller");
+const { getAllUsers } = require("./controllers/users.controller");
 const app = express();
 
 app.use(express.json());
@@ -32,6 +33,8 @@ app.post("/api/articles/:article_id/comments", postComment);
 app.delete("/api/comments/:comment_id", deleteComment);
 
 app.patch("/api/articles/:article_id", patchVotes);
+
+app.get("/api/users", getAllUsers);
 
 app.use(handleCustomErrors);
 app.use(handlePsqlErrors);
