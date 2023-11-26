@@ -52,17 +52,27 @@ describe("GET /api/articles", () => {
 });
 
 describe("GET /api/articles/:article_id", () => {
-  it("200: should return an article object which contains articles by the given ':article_id' parameter", () => {
+  it("200: should return an article object which contains articles by the given ':article_id' parameter and should include comment_count", () => {
     const test_id = 1;
     return request(app)
       .get(`/api/articles/${test_id}`)
       .expect(200)
       .then(({ body }) => {
         const { article } = body;
-        expect(article.article_id).toEqual(test_id);
+        expect(article).toEqual({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 100,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: "11",
+        });
       });
   });
-  it("404: should respond a message ':article_id' parameter does not exist", () => {
+  it("404: should respond with an error message ':article_id' parameter does not exist", () => {
     const test_id = articlesData.length + 1;
     return request(app)
       .get(`/api/articles/${test_id}`)
@@ -71,7 +81,7 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.msg).toEqual("Not found");
       });
   });
-  it("400: should respond a message if the given ':article_id' parameter is an invalid request", () => {
+  it("400: should respond with an error message if the given ':article_id' parameter is an invalid request", () => {
     const test_id = "invalid_id";
     return request(app)
       .get(`/api/articles/${test_id}`)
