@@ -98,5 +98,10 @@
         }
       ]
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes comment from comments data table which matches passed :comment_id",
+    "params": [6],
+    "exampleResponse": {}
   }
 }
