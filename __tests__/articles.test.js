@@ -82,6 +82,49 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
+describe("GET /api/articles?topic", () => {
+  it("200: should return all articles with matching passed topic query with each containing correct properties", () => {
+    const topic_query = "mitch";
+    return request(app)
+      .get(`/api/articles?topic=${topic_query}`)
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        articles.forEach((article) => {
+          expect(article.topic).toEqual(`${topic_query}`);
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+  it("404: should return an error message when passed topic query is valid, but does not exist in any articles", () => {
+    const topic_query = "pomegranates";
+    return request(app)
+      .get(`/api/articles?topic=${topic_query}`)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Not found");
+      });
+  });
+  it("400: should return an error message when passed an invalid topic query", () => {
+    const topic_query = 10;
+    return request(app)
+      .get(`/api/articles?topic=${topic_query}`)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad request");
+      });
+  });
+});
+
 describe("PATCH /api/articles/:article_id", () => {
   it("200: should increment votes when entity property 'inc_votes' has a positive value", () => {
     const test_id = 5;

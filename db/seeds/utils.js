@@ -1,3 +1,4 @@
+const format = require("pg-format");
 const db = require("../connection");
 exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
   if (!created_at) return { ...otherProperties };
@@ -48,4 +49,17 @@ exports.checkCommentExists = (comment_id) => {
         return Promise.reject({ status: 404, msg: "Not found" });
       }
     });
+};
+
+exports.checkTopicInArticlesExists = (topic) => {
+  const topicQuery = format(
+    `SELECT * FROM articles
+      WHERE topic = %L;`,
+    [topic]
+  );
+  return db.query(topicQuery).then(({ rows }) => {
+    if (!rows.length) {
+      return Promise.reject({ status: 404, msg: "Not found" });
+    }
+  });
 };

@@ -1,11 +1,20 @@
+const { checkTopicInArticlesExists } = require("../db/seeds/utils");
 const {
   selectArticleById,
   selectAllArticles,
 } = require("../models/articles.model");
 
 exports.getAllArticles = (req, res, next) => {
-  return selectAllArticles(req)
-    .then((articles) => {
+  const { topic } = req.query;
+  const articlesPromises = [selectAllArticles(topic)];
+
+  if (topic) {
+    articlesPromises.push(checkTopicInArticlesExists(topic));
+  }
+
+  Promise.all(articlesPromises)
+    .then((resolvedPromises) => {
+      const articles = resolvedPromises[0];
       res.status(200).send({ articles });
     })
     .catch(next);

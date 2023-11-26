@@ -15,6 +15,7 @@ const {
 const {
   getAllArticles,
   getArticleById,
+  getArticlesByTopic,
 } = require("./controllers/articles.controller");
 const { getAllUsers } = require("./controllers/users.controller");
 const app = express();
