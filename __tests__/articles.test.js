@@ -1,5 +1,5 @@
 const db = require("../db/connection");
-const app = require("../index");
+const app = require("../app");
 const seed = require("../db/seeds/seed");
 const {
   topicData,
