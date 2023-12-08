@@ -1,4 +1,4 @@
-const app = require("../app");
+const app = require("../index");
 const request = require("supertest");
 const endpointsJson = require("../endpoints.json");
 
