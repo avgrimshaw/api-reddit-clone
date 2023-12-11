@@ -7,7 +7,7 @@ exports.readEndpointsJson = () => {
         console.log(error);
         return error;
       }
-      return data;
+      return JSON.parse(`${data}`);
     })
   );
 };
