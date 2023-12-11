@@ -39,8 +39,6 @@ exports.deleteComment = (req, res, next) => {
     .catch(next);
 };
 
-console.log("ASDASDSD");
-
 exports.postComment = (req, res, next) => {
   const { body } = req;
   const { article_id } = req.params;
