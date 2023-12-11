@@ -8,7 +8,7 @@ describe("GET /api", () => {
       .get("/api")
       .expect(200)
       .then(({ body }) => {
-        const returned = JSON.parse(body.endpoints);
+        const returned = body.endpoints;
         expect(endpointsJson).toMatchObject(returned);
       });
   });

@@ -1,13 +1,14 @@
-const fs = require("fs/promises");
+const jsonfile = require("jsonfile");
 
 exports.readEndpointsJson = () => {
   return Promise.resolve(
-    fs.readFile(`${__dirname}/../endpoints.json`, "utf-8", (error, data) => {
-      if (error) {
-        console.log(error);
-        return error;
-      }
-      return JSON.parse(`${data}`);
-    })
+    jsonfile
+      .readFile(`${__dirname}/../endpoints.json`)
+      .then((data) => {
+        return data;
+      })
+      .catch((err) => {
+        console.log(err);
+      })
   );
 };
