@@ -2,7 +2,7 @@
 
 ## Setup environment variables
 
-You will need the necessary environment variables to run this project.
+You will require the necessary environment variables to run this project.
 
 First of all, please run the command `npm install` in the terminal to install the necessary dependencies.
 
